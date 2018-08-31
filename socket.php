@@ -17,14 +17,13 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onOpen(ConnectionInterface $conn) {
-        // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        echo "New connection!\n";
+        $this->msg('New connection!');
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
         $numRecv = count($this->clients) - 1;
-        echo $msg . "\n";
+        $this->msg('Message sent to ' . $numRecv . ' clients.');
 
         foreach ($this->clients as $client) {
             if ($from !== $client) {
@@ -35,12 +34,16 @@ class Chat implements MessageComponentInterface {
 
     public function onClose(ConnectionInterface $conn) {
         $this->clients->detach($conn);
-        echo "Connection {$conn->resourceId} has disconnected\n";
+        $this->msg('Connection ' . $conn->resourceId . ' has disconnected');
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}\n";
+        $this->msg('An error has occurred: ' . $e->getMessage());
         $conn->close();
+    }
+
+    private function msg( $content ) {
+        echo $content . PHP_EOL;
     }
 
 }
